@@ -21,13 +21,6 @@ public class LinkInfo {
     private String shortLink;
     private long openingCount;
 
-    public LinkInfo(CreateShortLinkRequest request) {
-        this.link = request.getLink();
-        this.endTime = request.getEndTime();
-        this.description = request.getDescription();
-        this.active = request.getActive();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
