@@ -1,7 +1,6 @@
 package ru.kerchik.linkShortener.model;
 
 import lombok.*;
-import ru.kerchik.linkShortener.dto.CreateShortLinkRequest;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;

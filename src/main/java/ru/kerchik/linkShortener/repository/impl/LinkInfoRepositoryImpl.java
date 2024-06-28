@@ -1,5 +1,6 @@
 package ru.kerchik.linkShortener.repository.impl;
 
+import org.springframework.stereotype.Repository;
 import ru.kerchik.linkShortener.model.LinkInfo;
 import ru.kerchik.linkShortener.repository.LinkInfoRepository;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+@Repository
 public class LinkInfoRepositoryImpl implements LinkInfoRepository {
     private final Map<String, LinkInfo> storage = new ConcurrentHashMap<>();
 
