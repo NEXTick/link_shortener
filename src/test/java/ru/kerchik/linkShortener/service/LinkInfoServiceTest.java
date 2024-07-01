@@ -6,29 +6,27 @@ import org.junit.jupiter.api.Test;
 import ru.kerchik.linkShortener.dto.CreateShortLinkRequest;
 import ru.kerchik.linkShortener.exception.NotFoundException;
 import ru.kerchik.linkShortener.model.LinkInfo;
-import ru.kerchik.linkShortener.repository.impl.LinkInfoRepositoryImpl;
-import ru.kerchik.linkShortener.service.impl.LinkInfoServiceImpl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 class LinkInfoServiceTest {
 
-    static LinkInfoServiceImpl linkInfoService;
+    static LinkInfoService linkInfoService;
     static CreateShortLinkRequest dto;
 
     static LinkInfo linkInfo;
 
     @BeforeAll
     static void filling() {
-        linkInfoService = new LinkInfoServiceImpl(new LinkInfoRepositoryImpl());
+        linkInfoService = new LinkInfoService();
 
         dto = new CreateShortLinkRequest();
         dto.setLink("https://pomofocus.io/app");
         dto.setActive(true);
         dto.setDescription("Time to focus!");
 
-        linkInfo = linkInfoService.createLinkInfo(dto);
+
     }
 
     @Test

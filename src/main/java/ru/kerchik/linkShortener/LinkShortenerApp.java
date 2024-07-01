@@ -1,31 +1,36 @@
 package ru.kerchik.linkShortener;
 
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.kerchik.linkShortener.dto.CreateShortLinkRequest;
-import ru.kerchik.linkShortener.repository.impl.LinkInfoRepositoryImpl;
-import ru.kerchik.linkShortener.service.LogExecutionTimeLinkInfoServiceProxy;
-import ru.kerchik.linkShortener.service.impl.LinkInfoServiceImpl;
+import ru.kerchik.linkShortener.property.LinkShortenerProperty;
+import ru.kerchik.linkShortener.service.LinkInfoService;
 
 import javax.annotation.PostConstruct;
-import java.time.ZonedDateTime;
 
 
 @SpringBootApplication
+@AllArgsConstructor
 public class LinkShortenerApp {
+
+    @Autowired
+    private final LinkShortenerProperty property;
+
+    @Autowired
+    private final LinkInfoService linkInfoService;
+
 
     @PostConstruct
     public void pc() {
-        CreateShortLinkRequest createShortLinkRequest = new CreateShortLinkRequest(
-                "zaza.zoom",
-                ZonedDateTime.now(),
-                "Some description",
-                true
-        );
-        LogExecutionTimeLinkInfoServiceProxy proxy =
-                new LogExecutionTimeLinkInfoServiceProxy(new LinkInfoServiceImpl(new LinkInfoRepositoryImpl()));
-        System.out.println(proxy.getByShortLink("abc"));
-        System.out.println(proxy.createLinkInfo(createShortLinkRequest));
+
+        System.out.println(property.getSystemId());
+        CreateShortLinkRequest lr = CreateShortLinkRequest.builder()
+                        .link("https://ya.ru/")
+                                .build();
+        System.out.println(linkInfoService.createLinkInfo(lr).getShortLink());
+
     }
 
     public static void main(String[] args) {
