@@ -13,6 +13,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "link-shortener")
 public class LinkShortenerProperty {
 
-    private String systemId = "kchau";
     private int shortLinkLength = 2;
 }

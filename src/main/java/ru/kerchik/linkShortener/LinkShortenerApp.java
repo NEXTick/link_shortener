@@ -16,20 +16,17 @@ import javax.annotation.PostConstruct;
 public class LinkShortenerApp {
 
     @Autowired
-    private final LinkShortenerProperty property;
-
-    @Autowired
     private final LinkInfoService linkInfoService;
 
 
     @PostConstruct
     public void pc() {
 
-        System.out.println(property.getSystemId());
         CreateShortLinkRequest lr = CreateShortLinkRequest.builder()
-                        .link("https://ya.ru/")
-                                .build();
+                .link("https://ya.ru/")
+                .build();
         System.out.println(linkInfoService.createLinkInfo(lr).getShortLink());
+        System.out.println(lr);
 
     }
 

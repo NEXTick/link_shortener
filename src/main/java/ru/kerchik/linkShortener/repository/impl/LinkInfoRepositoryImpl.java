@@ -4,9 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.kerchik.linkShortener.model.LinkInfo;
 import ru.kerchik.linkShortener.repository.LinkInfoRepository;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -22,6 +20,27 @@ public class LinkInfoRepositoryImpl implements LinkInfoRepository {
     public LinkInfo saveShortLink(LinkInfo linkInfo) {
         linkInfo.setId(UUID.randomUUID());
         storage.put(linkInfo.getShortLink(), linkInfo);
+
         return linkInfo;
+    }
+
+    @Override
+    public List<LinkInfo> getAll() {
+        List<LinkInfo> allLinks = new ArrayList<>();
+
+        for (var entry : storage.entrySet()) {
+            allLinks.add(entry.getValue());
+        }
+
+        return allLinks;
+    }
+
+    @Override
+    public void delete(UUID id) {
+        for (LinkInfo linkInfo : storage.values()) {
+            if (linkInfo.getId().equals(id)) {
+                storage.remove(linkInfo.getShortLink());
+            }
+        }
     }
 }

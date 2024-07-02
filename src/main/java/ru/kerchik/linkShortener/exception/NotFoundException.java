@@ -1,6 +1,6 @@
 package ru.kerchik.linkShortener.exception;
 
-public class NotFoundException extends RuntimeException{
+public class NotFoundException extends RuntimeException {
     public NotFoundException() {
     }
 

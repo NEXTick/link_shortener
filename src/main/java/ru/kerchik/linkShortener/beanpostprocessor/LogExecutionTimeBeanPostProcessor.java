@@ -17,7 +17,6 @@ import java.util.Map;
 
 @Component
 @Slf4j
-
 @ConditionalOnProperty(prefix = "link-shortener", name = "enable-log-exec-time", havingValue = "true")
 public class LogExecutionTimeBeanPostProcessor implements BeanPostProcessor {
 
@@ -33,6 +32,7 @@ public class LogExecutionTimeBeanPostProcessor implements BeanPostProcessor {
                 acceptableBeans.get(beanName).getMethods().add(method);
             }
         }
+
         return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
     }
 
@@ -65,14 +65,17 @@ public class LogExecutionTimeBeanPostProcessor implements BeanPostProcessor {
                     log.info("Время выполнения метода '{}': {} мс", method.getName(), stopWatch.getTotalTimeMillis());
                 }
             }
-            return method.invoke(bean, args);
-        };
 
+            try {
+                return method.invoke(bean, args);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        };
 
         Enhancer e = new Enhancer();
         e.setSuperclass(beanClass);
         e.setCallback(methodInterceptor);
-
 
         return e.create();
     }
@@ -81,6 +84,7 @@ public class LogExecutionTimeBeanPostProcessor implements BeanPostProcessor {
         if (method1.getName().equals(method2.getName())) {
             return equalParamTypes(method1.getParameterTypes(), method2.getParameterTypes());
         }
+
         return false;
     }
 
@@ -91,8 +95,10 @@ public class LogExecutionTimeBeanPostProcessor implements BeanPostProcessor {
                 if (params1[i] != params2[i])
                     return false;
             }
+
             return true;
         }
+
         return false;
     }
 
