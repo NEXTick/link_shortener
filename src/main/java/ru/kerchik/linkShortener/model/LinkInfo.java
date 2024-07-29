@@ -1,7 +1,12 @@
 package ru.kerchik.linkShortener.model;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,14 +16,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LinkInfo {
+@Entity
+public class LinkInfo extends AuditableEntity{
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
     private String link;
     private ZonedDateTime endTime;
     private String description;
     private Boolean active;
     private String shortLink;
-    private long openingCount;
+    private Long openingCount;
 
     @Override
     public boolean equals(Object o) {

@@ -3,7 +3,7 @@ package ru.kerchik.linkShortener.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ru.kerchik.linkShortener.dto.CreateShortLinkRequest;
+import ru.kerchik.linkShortener.dto.ShortLinkRequest;
 import ru.kerchik.linkShortener.exception.NotFoundException;
 import ru.kerchik.linkShortener.model.LinkInfo;
 
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LinkInfoServiceTest {
 
     static LinkInfoService linkInfoService;
-    static CreateShortLinkRequest dto;
+    static ShortLinkRequest dto;
 
     static LinkInfo linkInfo;
 
@@ -21,7 +21,7 @@ class LinkInfoServiceTest {
     static void filling() {
         linkInfoService = new LinkInfoService();
 
-        dto = new CreateShortLinkRequest();
+        dto = new ShortLinkRequest();
         dto.setLink("https://pomofocus.io/app");
         dto.setActive(true);
         dto.setDescription("Time to focus!");

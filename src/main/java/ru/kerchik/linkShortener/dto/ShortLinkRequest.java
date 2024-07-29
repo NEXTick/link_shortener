@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateShortLinkRequest {
+public class ShortLinkRequest {
 
     @NotEmpty(message = "Ссылка не может быть пустой")
     @Size(min = 10, max = 4096, message = "Длина ссылки не может быть меньше 10")
@@ -23,5 +23,6 @@ public class CreateShortLinkRequest {
     private String description;
     @NotNull(message = "Признак активности не может быть пустым")
     private Boolean active;
+    private Long openingCount;
 
 }

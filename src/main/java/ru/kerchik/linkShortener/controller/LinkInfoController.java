@@ -2,9 +2,13 @@ package ru.kerchik.linkShortener.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kerchik.linkShortener.dto.CreateShortLinkRequest;
-import ru.kerchik.linkShortener.dto.CreateShortLinkResponse;
+import ru.kerchik.linkShortener.dto.ShortLinkRequest;
+import ru.kerchik.linkShortener.dto.FilterLinkInfoRequest;
+import ru.kerchik.linkShortener.dto.LinkInfoResponse;
 import ru.kerchik.linkShortener.dto.common.CommonRequest;
 import ru.kerchik.linkShortener.dto.common.CommonResponse;
 import ru.kerchik.linkShortener.model.LinkInfo;
@@ -12,6 +16,7 @@ import ru.kerchik.linkShortener.service.LinkInfoService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -23,13 +28,13 @@ public class LinkInfoController {
     private final LinkInfoService linkInfoService;
 
     @PostMapping
-    public CommonResponse<CreateShortLinkResponse> postCreateShortLink(@RequestBody @Valid CommonRequest<CreateShortLinkRequest> request) {
+    public CommonResponse<LinkInfoResponse> postCreateShortLink(@RequestBody @Valid CommonRequest<ShortLinkRequest> request) {
         log.info("Поступил запрос на создание короткой ссылки: {}", request);
 
-        CreateShortLinkResponse createShortLinkResponse = linkInfoService.createLinkInfo(request.getBody());
+        LinkInfoResponse linkInfoResponse = linkInfoService.createLinkInfo(request.getBody());
 
-        return CommonResponse.<CreateShortLinkResponse>builder()
-                .body(createShortLinkResponse)
+        return CommonResponse.<LinkInfoResponse>builder()
+                .body(linkInfoResponse)
                 .build();
     }
 
@@ -43,11 +48,30 @@ public class LinkInfoController {
 
     }
 
+    @PutMapping("/{shortLink}")
+    public CommonResponse<LinkInfoResponse> updateByShortLink(@PathVariable String shortLink,
+                                                              @RequestBody @Valid CommonRequest<ShortLinkRequest> request) {
+        log.info("Поступил запрос на обновление ссылки: {}", shortLink);
+
+        return CommonResponse.<LinkInfoResponse>builder()
+                .body(linkInfoService.update(request.getBody(), shortLink))
+                .build();
+    }
+
     @DeleteMapping("/{shortLinkId}")
     public void deleteShortLink(@PathVariable UUID shortLinkId) {
         log.info("Поступил запрос на удаление короткой ссылки {}", shortLinkId);
 
         linkInfoService.delete(shortLinkId);
+    }
+
+    @PostMapping("/filter")
+    public CommonResponse<List<LinkInfoResponse>> filter(@RequestBody @Valid CommonRequest<FilterLinkInfoRequest> request) {
+        List<LinkInfoResponse> linkInfoResponses = linkInfoService.findByFilter(request.getBody());
+
+        return CommonResponse.<List<LinkInfoResponse>>builder()
+                .body(linkInfoResponses)
+                .build();
     }
 
 }

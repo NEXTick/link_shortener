@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: mentoring
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: Ab123456
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+
+volumes:
+  postgres_volume:
