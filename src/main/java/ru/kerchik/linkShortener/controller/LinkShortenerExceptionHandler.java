@@ -1,7 +1,11 @@
 package ru.kerchik.linkShortener.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,13 +14,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kerchik.linkShortener.dto.common.CommonResponse;
 import ru.kerchik.linkShortener.dto.common.ValidationError;
+import ru.kerchik.linkShortener.exception.NotFoundPageException;
 
 import java.util.List;
 
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class LinkShortenerExceptionHandler {
+
+    private final String notFoundPage;
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public CommonResponse<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -50,5 +59,15 @@ public class LinkShortenerExceptionHandler {
         return CommonResponse.builder()
                 .errorMessage("Непредвиденная ошибка: " + e.getMessage())
                 .build();
+    }
+
+
+    @ExceptionHandler(NotFoundPageException.class)
+    public ResponseEntity<String> handleNotFoundPageException(NotFoundPageException e) {
+        log.error(e.getMessage(), e);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.TEXT_HTML)
+                .body(notFoundPage);
     }
 }

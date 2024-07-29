@@ -3,20 +3,24 @@ package ru.kerchik.linkShortener.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.kerchik.linkShortener.beanpostprocessor.LogExecutionTime;
+import ru.kerchik.linkShortener.dto.PageableRequest;
 import ru.kerchik.linkShortener.dto.ShortLinkRequest;
 import ru.kerchik.linkShortener.dto.FilterLinkInfoRequest;
 import ru.kerchik.linkShortener.dto.LinkInfoResponse;
 import ru.kerchik.linkShortener.exception.NotFoundException;
+import ru.kerchik.linkShortener.exception.NotFoundPageException;
 import ru.kerchik.linkShortener.mapper.LinkInfoMapper;
 import ru.kerchik.linkShortener.model.LinkInfo;
 import ru.kerchik.linkShortener.property.LinkShortenerProperty;
 import ru.kerchik.linkShortener.repository.LinkInfoRepository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,8 +50,8 @@ public class LinkInfoService {
 
     @LogExecutionTime
     public LinkInfo getByShortLink(String shortLink) {
-        LinkInfo linkInfo = repository.findByShortLinkAndActiveTrue(shortLink)
-                .orElseThrow(() -> new NotFoundException("Default link by this short link not founded"));
+        LinkInfo linkInfo = repository.findByShortLinkAndActiveTrueAndEndTimeIsAfter(shortLink, ZonedDateTime.now())
+                .orElseThrow(() -> new NotFoundPageException("Default link by this short link not founded"));
 
         repository.incrementOpeningCountByShortLink(shortLink);
 
@@ -65,17 +69,39 @@ public class LinkInfoService {
 
     public List<LinkInfoResponse> findByFilter(FilterLinkInfoRequest filterRequest) {
 
+        Pageable pageable = createPage(filterRequest);
+
+        
+
         return repository.findByFilter(filterRequest.getLinkPart(),
                         filterRequest.getEndTimeFrom(),
                         filterRequest.getEndTimeTo(),
                         filterRequest.getDescriptionPart(),
-                        filterRequest.getActive()).stream()
+                        filterRequest.getActive(),
+                        pageable).stream()
                 .map(linkInfoMapper::toResponse)
                 .toList();
     }
 
+    private static Pageable createPage(FilterLinkInfoRequest filterRequest) {
+        PageableRequest page = filterRequest.getPage();
+
+        List<Sort.Order> orders = page.getSorts().stream()
+                .map(sort -> new Sort.Order(Sort.Direction.fromString(sort.getDirection()), sort.getField()))
+                .toList();
+
+        Sort sort = CollectionUtils.isEmpty(orders)
+                ? Sort.unsorted()
+                : Sort.by(orders);
+
+        return PageRequest.of(page.getNumber()-1, page.getSize(), sort);
+    }
+
+    private record Result(PageableRequest page, Sort sort) {
+    }
+
     public LinkInfoResponse update(ShortLinkRequest shortLinkRequest, String shortLink) {
-        Optional<LinkInfo> foundedLinkInfo = repository.findByShortLinkAndActiveTrue(shortLink);
+        Optional<LinkInfo> foundedLinkInfo = repository.findByShortLinkAndActiveTrueAndEndTimeIsAfter(shortLink, ZonedDateTime.now());
 
         if (foundedLinkInfo.isPresent()) {
 
