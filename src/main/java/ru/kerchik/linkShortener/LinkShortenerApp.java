@@ -11,21 +11,6 @@ import ru.kerchik.linkShortener.service.LinkInfoService;
 @AllArgsConstructor
 public class LinkShortenerApp {
 
-    @Autowired
-    private final LinkInfoService linkInfoService;
-
-
-//    @PostConstruct
-//    public void pc() {
-//
-//        CreateShortLinkRequest lr = CreateShortLinkRequest.builder()
-//                .link("https://ya.ru/")
-//                .build();
-//        System.out.println(linkInfoService.createLinkInfo(lr).getShortLink());
-//        System.out.println(lr);
-//
-//    }
-
     public static void main(String[] args) {
         SpringApplication.run(LinkShortenerApp.class);
     }

@@ -15,7 +15,7 @@ import java.nio.file.Files;
 public class LinkShortenerConfig {
 
     @Bean
-    public String notFoundPage(ResourceLoader resourceLoader, ObjectMapper objectMapper) throws IOException {
+    public String notFoundPage() throws IOException {
         File file = ResourceUtils.getFile("classpath:templates/404.html");
 
         return Files.readString(file.toPath());

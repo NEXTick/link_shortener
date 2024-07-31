@@ -26,10 +26,8 @@ public class LinkShortenerExceptionHandler {
 
     private final String notFoundPage;
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public CommonResponse<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-
 
         BindingResult bindingResult = e.getBindingResult();
 
@@ -50,7 +48,6 @@ public class LinkShortenerExceptionHandler {
                 .build();
     }
 
-
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public CommonResponse<?> handleException(Exception e) {
@@ -60,7 +57,6 @@ public class LinkShortenerExceptionHandler {
                 .errorMessage("Непредвиденная ошибка: " + e.getMessage())
                 .build();
     }
-
 
     @ExceptionHandler(NotFoundPageException.class)
     public ResponseEntity<String> handleNotFoundPageException(NotFoundPageException e) {

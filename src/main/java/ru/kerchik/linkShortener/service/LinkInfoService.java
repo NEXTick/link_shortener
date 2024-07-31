@@ -1,6 +1,5 @@
 package ru.kerchik.linkShortener.service;
 
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +21,6 @@ import ru.kerchik.linkShortener.repository.LinkInfoRepository;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -58,20 +56,21 @@ public class LinkInfoService {
         return linkInfo;
     }
 
+    @LogExecutionTime
     public List<LinkInfo> getAll() {
 
         return repository.findAll();
     }
 
+    @LogExecutionTime
     public void delete(UUID id) {
         repository.deleteById(id);
     }
 
+    @LogExecutionTime
     public List<LinkInfoResponse> findByFilter(FilterLinkInfoRequest filterRequest) {
 
         Pageable pageable = createPage(filterRequest);
-
-        
 
         return repository.findByFilter(filterRequest.getLinkPart(),
                         filterRequest.getEndTimeFrom(),
@@ -83,7 +82,30 @@ public class LinkInfoService {
                 .toList();
     }
 
-    private static Pageable createPage(FilterLinkInfoRequest filterRequest) {
+    @LogExecutionTime
+    public LinkInfoResponse update(ShortLinkRequest shortLinkRequest) {
+
+        LinkInfo linkInfoToUpdate = repository.findByLink(shortLinkRequest.getLink()).orElseThrow(() -> new NotFoundException("Ссылка не найдена"));
+
+        linkInfoToUpdate
+                .setEndTime(shortLinkRequest.getEndTime() == null
+                        ? linkInfoToUpdate.getEndTime()
+                        : shortLinkRequest.getEndTime());
+
+        linkInfoToUpdate
+                .setDescription(shortLinkRequest.getDescription() == null
+                        ? linkInfoToUpdate.getDescription()
+                        : shortLinkRequest.getDescription());
+
+        linkInfoToUpdate
+                .setActive(shortLinkRequest.getActive() == null
+                        ? linkInfoToUpdate.getActive()
+                        : shortLinkRequest.getActive());
+
+        return linkInfoMapper.toResponse(repository.save(linkInfoToUpdate));
+    }
+
+    private Pageable createPage(FilterLinkInfoRequest filterRequest) {
         PageableRequest page = filterRequest.getPage();
 
         List<Sort.Order> orders = page.getSorts().stream()
@@ -94,28 +116,6 @@ public class LinkInfoService {
                 ? Sort.unsorted()
                 : Sort.by(orders);
 
-        return PageRequest.of(page.getNumber()-1, page.getSize(), sort);
-    }
-
-    private record Result(PageableRequest page, Sort sort) {
-    }
-
-    public LinkInfoResponse update(ShortLinkRequest shortLinkRequest, String shortLink) {
-        Optional<LinkInfo> foundedLinkInfo = repository.findByShortLinkAndActiveTrueAndEndTimeIsAfter(shortLink, ZonedDateTime.now());
-
-        if (foundedLinkInfo.isPresent()) {
-
-            LinkInfo linkInfoToUpdate = new LinkInfo(foundedLinkInfo.get().getId(),
-                    shortLinkRequest.getLink(),
-                    shortLinkRequest.getEndTime(),
-                    shortLinkRequest.getDescription(),
-                    shortLinkRequest.getActive(),
-                    shortLink,
-                    foundedLinkInfo.get().getOpeningCount());
-
-            return linkInfoMapper.toResponse(repository.save(linkInfoToUpdate));
-        }
-
-        throw new NotFoundException("Default link by this short link not founded");
+        return PageRequest.of(page.getNumber() - 1, page.getSize(), sort);
     }
 }

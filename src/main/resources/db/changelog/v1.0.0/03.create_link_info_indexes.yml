@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: "03.create_link_info_indexes.yml"
+      author: "Rukovitsyn KS"
+      runInTransaction: false
+      changes:
+        - sql:
+            dbms: "postgresql"
+            sql: CREATE INDEX CONCURRENTLY link_info_link_idx ON link_info USING gin (link);
+        - sql:
+            dbms: "postgresql"
+            sql: CREATE INDEX CONCURRENTLY link_info_description_idx ON link_info USING gin (description);
+        - createIndex:
+            indexName: link_info_end_time_idx
+            tableName: link_info
+            columns:
+              - column:
+                  name: end_time

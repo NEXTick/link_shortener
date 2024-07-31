@@ -18,7 +18,7 @@ public interface LinkInfoRepository extends JpaRepository<LinkInfo, UUID> {
             FROM LinkInfo li
             WHERE (:linkPart IS NULL  OR li.link LIKE '%' || :linkPart || '%')
             AND (cast(:endTimeFrom as date) IS NULL OR li.endTime >= :endTimeFrom)
-            AND (cast(:endTimeTo as date) IS NULL OR li.endTime >= :endTimeTo)
+            AND (cast(:endTimeTo as date) IS NULL OR li.endTime <= :endTimeTo)
             AND (:descriptionPart IS NULL  OR li.description LIKE '%' || :descriptionPart || '%')
             AND (:active IS NULL  OR li.active = :active)
             """)
@@ -29,6 +29,8 @@ public interface LinkInfoRepository extends JpaRepository<LinkInfo, UUID> {
                                 Boolean active, Pageable pageable);
 
     Optional<LinkInfo> findByShortLinkAndActiveTrueAndEndTimeIsAfter(String shortLink, ZonedDateTime zonedDateTime);
+
+    Optional<LinkInfo> findByLink(String link);
 
     @Query("""
             UPDATE LinkInfo li

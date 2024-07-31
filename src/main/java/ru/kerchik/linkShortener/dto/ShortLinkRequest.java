@@ -23,6 +23,5 @@ public class ShortLinkRequest {
     private String description;
     @NotNull(message = "Признак активности не может быть пустым")
     private Boolean active;
-    private Long openingCount;
 
 }

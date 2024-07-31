@@ -29,7 +29,6 @@ public class LinkInfoController {
 
     @PostMapping
     public CommonResponse<LinkInfoResponse> postCreateShortLink(@RequestBody @Valid CommonRequest<ShortLinkRequest> request) {
-        log.info("Поступил запрос на создание короткой ссылки: {}", request);
 
         LinkInfoResponse linkInfoResponse = linkInfoService.createLinkInfo(request.getBody());
 
@@ -40,7 +39,6 @@ public class LinkInfoController {
 
     @GetMapping("/all")
     public CommonResponse<List<LinkInfo>> getAllLinks() {
-        log.info("Поступил запрос на получение всех имеющихся в памяти коротких ссылок");
 
         return CommonResponse.<List<LinkInfo>>builder()
                 .body(linkInfoService.getAll())
@@ -48,19 +46,16 @@ public class LinkInfoController {
 
     }
 
-    @PutMapping("/{shortLink}")
-    public CommonResponse<LinkInfoResponse> updateByShortLink(@PathVariable String shortLink,
-                                                              @RequestBody @Valid CommonRequest<ShortLinkRequest> request) {
-        log.info("Поступил запрос на обновление ссылки: {}", shortLink);
+    @PatchMapping()
+    public CommonResponse<LinkInfoResponse> updateByShortLink(@RequestBody @Valid CommonRequest<ShortLinkRequest> request) {
 
         return CommonResponse.<LinkInfoResponse>builder()
-                .body(linkInfoService.update(request.getBody(), shortLink))
+                .body(linkInfoService.update(request.getBody()))
                 .build();
     }
 
     @DeleteMapping("/{shortLinkId}")
     public void deleteShortLink(@PathVariable UUID shortLinkId) {
-        log.info("Поступил запрос на удаление короткой ссылки {}", shortLinkId);
 
         linkInfoService.delete(shortLinkId);
     }
